@@ -84,6 +84,10 @@ const useProxyPer = {
 
 	// Call this if page object passed
 	cdppage: async (page, proxy) => {
+		if (!page.eventsMap) {
+			page.eventsMap = new Map();
+		}
+
 		await page.setRequestInterception(true);
 		const listener = '$ppp_requestListener';
 		removeRequestListener(page, listener);
@@ -105,6 +109,8 @@ const useProxyPer = {
 
 // Main function
 const useProxy = async (target, data) => {
+	if(target.constructor.name == "CdpPage") return useProxyPer.cdppage(target, data);
+	if(target.constructor.name == "CdpHTTPRequest") return useProxyPer.httprequest(target, data);
 	useProxyPer[target.constructor.name.toLowerCase()](target, data);
 };
 
